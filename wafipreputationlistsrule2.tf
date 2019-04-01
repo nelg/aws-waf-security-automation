@@ -14,12 +14,12 @@
 #   limitations under the License.
 ###############################################################################
 
-resource "aws_waf_rule" "WAFIPReputationListsRule2" {
-    depends_on = ["aws_waf_ipset.WAFReputationListsSet2"]
+resource "aws_wafregional_rule" "WAFIPReputationListsRule2" {
+    depends_on = ["aws_wafregional_ipset.WAFReputationListsSet2"]
     name = "${var.customer} - WAF IP Reputation Lists Rule #2"
-    metric_name = "SecurityAutomationsIPReputationListsRule2"
-    predicates {
-        data_id = "${aws_waf_ipset.WAFReputationListsSet2.id}"
+    metric_name = "${var.customer}SAIPReputationListsRule2"
+    predicate {
+        data_id = "${aws_wafregional_ipset.WAFReputationListsSet2.id}"
         negated = false
         type = "IPMatch"
     }

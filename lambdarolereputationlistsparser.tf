@@ -32,6 +32,7 @@ resource "aws_iam_role" "LambdaRoleReputationListsParser" {
 }
 EOF
     path = "/"
+    tags = "${var.tags}"
 }
 resource "aws_iam_role_policy" "LambdaRoleReputationListsParserCloudWatchLogs" {
     name = "${var.customer}-LambdaRoleReputationListsParserCloudWatchLogs"
@@ -63,6 +64,7 @@ resource "aws_iam_role_policy" "LambdaRoleReputationListsParserWAFGetChangeToken
   "Statement": [
     {
       "Action": [
+        "waf-regional:GetChangeToken",
         "waf:GetChangeToken"
       ],
       "Effect": "Allow",
@@ -82,13 +84,13 @@ resource "aws_iam_role_policy" "LambdaRoleReputationListsParserWAFGetAndUpdateIP
   "Statement": [
     {
       "Action": [
-        "waf:GetIPSet",
-        "waf:UpdateIPSet"
+        "waf-regional:GetIPSet",
+        "waf-regional:UpdateIPSet"
       ],
       "Effect": "Allow",
       "Resource": [
-        "arn:aws:waf::${data.aws_caller_identity.current.account_id}:ipset/${aws_waf_ipset.WAFReputationListsSet1.id}",
-        "arn:aws:waf::${data.aws_caller_identity.current.account_id}:ipset/${aws_waf_ipset.WAFReputationListsSet2.id}"
+        "arn:aws:waf-regional:*:${data.aws_caller_identity.current.account_id}:ipset/${aws_wafregional_ipset.WAFReputationListsSet1.id}",
+        "arn:aws:waf-regional:*:${data.aws_caller_identity.current.account_id}:ipset/${aws_wafregional_ipset.WAFReputationListsSet2.id}"
       ]
     }
   ]

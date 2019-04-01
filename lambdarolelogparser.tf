@@ -32,6 +32,7 @@ resource "aws_iam_role" "LambdaRoleLogParser" {
 }
 EOF
     path = "/"
+    tags = "${var.tags}"
 }
 resource "aws_iam_role_policy" "LambdaRoleLogParserS3Access" {
     name = "${var.customer}-LambdaRoleLogParserS3Access"
@@ -42,7 +43,9 @@ resource "aws_iam_role_policy" "LambdaRoleLogParserS3Access" {
   "Statement": [
     {
       "Action": [
-        "s3:GetObject"
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:ListObject"
       ],
       "Effect": "Allow",
       "Resource": [
@@ -81,7 +84,7 @@ resource "aws_iam_role_policy" "LambdaRoleLogParserWAFGetChangeToken" {
   "Statement": [
     {
       "Action": [
-        "waf:GetChangeToken"
+        "waf-regional:GetChangeToken"
       ],
       "Effect": "Allow",
       "Resource": [
@@ -100,13 +103,13 @@ resource "aws_iam_role_policy" "LambdaRoleLogParserWAFGetAndUpdateIPSet" {
   "Statement": [
     {
       "Action": [
-        "waf:GetIPSet",
-        "waf:UpdateIPSet"
+        "waf-regional:GetIPSet",
+        "waf-regional:UpdateIPSet"
       ],
       "Effect": "Allow",
       "Resource": [
-          "arn:aws:waf::${data.aws_caller_identity.current.account_id}:ipset/${aws_waf_ipset.WAFBlacklistSet.id}",
-          "arn:aws:waf::${data.aws_caller_identity.current.account_id}:ipset/${aws_waf_ipset.WAFAutoBlockSet.id}"
+          "arn:aws:waf-regional:${var.aws_region}:${data.aws_caller_identity.current.account_id}:ipset/${aws_wafregional_ipset.WAFBlacklistSet.id}",
+          "arn:aws:waf-regional:${var.aws_region}:${data.aws_caller_identity.current.account_id}:ipset/${aws_wafregional_ipset.WAFAutoBlockSet.id}"
       ]
     }
   ]

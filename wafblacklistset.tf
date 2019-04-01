@@ -14,9 +14,9 @@
 #   limitations under the License.
 ###############################################################################
 
-resource "aws_waf_ipset" "WAFBlacklistSet" {
+resource "aws_wafregional_ipset" "WAFBlacklistSet" {
     name = "${var.customer} - Blacklist Set"
-    ip_set_descriptors {
+    ip_set_descriptor {
         type = "IPV4"
         value = "0.0.0.0/32"
     }

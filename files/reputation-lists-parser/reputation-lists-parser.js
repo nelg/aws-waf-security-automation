@@ -1,4 +1,15 @@
-#!/usr/bin/env node
+/*********************************************************************************************************************
+ *  Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
+ *                                                                                                                    *
+ *  Licensed under the Amazon Software License (the "License"). You may not use this file except in compliance        *
+ *  with the License. A copy of the License is located at                                                             *
+ *                                                                                                                    *
+ *      http://aws.amazon.com/asl/                                                                                    *
+ *                                                                                                                    *
+ *  or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES *
+ *  OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions    *
+ *  and limitations under the License.                                                                                *
+ *********************************************************************************************************************/
 
 var readline = require('readline');
 var aws = require('aws-sdk');
@@ -12,14 +23,14 @@ aws.config.update({
         base: 1000
     }
 });
-var waf = new aws.WAF();
+var waf = null;
 var cloudwatch = new aws.CloudWatch();
 var cloudformation = new aws.CloudFormation();
 
 /**
  * Maximum number of IP descriptors per IP Set
  */
-var maxDescriptorsPerIpSet = 1000;
+var maxDescriptorsPerIpSet = 10000;
 
 /**
  * Maximum number of IP descriptors updates per call
@@ -178,33 +189,33 @@ function removeContainedRanges(ranges) {
 }
 
 /**
- * Combine ranges into larger /8, /16, or /24 ranges
+ * Combine ranges into larger /8, /16 through /31 ranges
  * @param {Range[]} ranges - Array of ranges
  */
 function CombineRanges(ranges) {
-    // TODO: should check if we can combine ranges into a larger /8, /26, /24 ranges
+    // TODO: should check if we can combine ranges into a larger /8, /16 through /31 ranges
 }
 
 /**
- * Split ranges into smaller /8, /16, /24 or /32 ranges
+ * Split ranges into smaller /8 or /16 ranges
  * @param {Range[]} ranges - Array of ranges
  */
 function splitRanges(ranges) {
-    // AWS WAF only support ranges with /8, /16, /24 or /32 masks
+    // AWS WAF only supports ranges with /8 or /16 through /32 ranges
     // Therefore, split ranges into ones that have the above masks
-    // For example = /15 can be decomposed into 2 /16 ranges, /17 can be decomposed into 64 /14 ranges
+    // For example = /7 can be decomposed into 2 /8 ranges, /9 can be decomposed into 128 /16 ranges
     for (var i = 0; i < ranges.length; i++) {
         var range = ranges[i];
         var list = range.list;
         var mask = range.mask;
-        var supportedMask = (mask <= 8 ? 8 : mask <= 16 ? 16 : mask <= 24 ? 24 : 32);
+        var supportedMask = (mask <= 8 ? 8 : mask <= 16 ? 16 : mask);
         var supportedMaskDifference = supportedMask - mask;
-        // Check if the mask is not a /8, /16, /24 or /32
+        // Check if the mask is not a /8, /16 through /32
         if (supportedMaskDifference > 0) {
             var size = Math.pow(2, 32 - supportedMask);
             var count = Math.pow(2, supportedMaskDifference);
             var newRanges = [];
-            // create new ranges that have /8, /16, /24 or /32 masks to replace this
+            // create new ranges that have /8, /16 through /32 masks to replace this
             for (var j = 0; j < count; j++) {
                 newRanges.push(new Range(list, range.number + (j * size), supportedMask));
             }
@@ -214,7 +225,7 @@ function splitRanges(ranges) {
             i += newRanges.length - 1;
         }
     }
-    logRanges(ranges, 'after splitting to /8, /16, /24 or /32 ranges...');
+    logRanges(ranges, 'after splitting to /8, /16 through /32 ranges...');
 }
 
 /**
@@ -258,41 +269,6 @@ function send_anonymous_usage_data(event, context) {
     async.parallel([
         // 0 - get reputation_ip_set_size
         function(callback) {
-            // get stack name
-            var stack_name = context.functionName;
-            stack_name = stack_name.split("-");
-            stack_name.pop();
-            stack_name.pop();
-            if (stack_name.length > 1) {
-                stack_name = stack_name.join("-");
-            } else {
-                stack_name = stack_name[0];
-            }
-
-            cloudformation.describeStacks({
-                StackName: stack_name
-            }, function(err, data) {
-                var uuid = "";
-                var send_anonymous_usage_data = "";
-                if (err) {
-                    console.error('Error getting UUID', err);
-                } else {
-                    data.Stacks[0].Outputs.forEach(function(output, index) {
-                        if (output.OutputKey === "UUID") {
-                            uuid = output.OutputValue;
-                        } else if (output.OutputKey === "SendAnonymousUsageData") {
-                            send_anonymous_usage_data = output.OutputValue;
-                        }
-                    });
-                }
-                if (send_anonymous_usage_data !== "yes") {
-                    uuid = "";
-                }
-                callback(err, uuid);
-            });
-        },
-        // 1 - get reputation_ip_set_size
-        function(callback) {
             async.map(event.ipSetIds, function(IPSetId, callback) {
                 waf.getIPSet({
                     IPSetId: IPSetId
@@ -311,7 +287,7 @@ function send_anonymous_usage_data(event, context) {
                 callback(err, reputation_ip_set_size);
             });
         },
-        // 2 - get allowed_requests
+        // 1 - get allowed_requests
         function(callback) {
             var end_time = new Date();
             var start_time = new Date();
@@ -328,7 +304,7 @@ function send_anonymous_usage_data(event, context) {
                     Value: "ALL"
                 }, {
                     Name: "WebACL",
-                    Value: "SecurityAutomationsMaliciousRequesters"
+                    Value: process.env.ACL_METRIC_NAME + 'MaliciousRequesters'
                 }]
             };
             cloudwatch.getMetricStatistics(params, function(err, data) {
@@ -345,7 +321,7 @@ function send_anonymous_usage_data(event, context) {
                 }
             });
         },
-        // 3 - get blocked_requests_all
+        // 2 - get blocked_requests_all
         function(callback) {
             var end_time = new Date();
             var start_time = new Date();
@@ -362,7 +338,7 @@ function send_anonymous_usage_data(event, context) {
                     Value: "ALL"
                 }, {
                     Name: "WebACL",
-                    Value: "SecurityAutomationsMaliciousRequesters"
+                    Value: process.env.ACL_METRIC_NAME + 'MaliciousRequesters'
                 }]
             };
             cloudwatch.getMetricStatistics(params, function(err, data) {
@@ -379,14 +355,14 @@ function send_anonymous_usage_data(event, context) {
                 }
             });
         },
-        // 4 - get blocked_requests_ip_reputation_lists1
+        // 3 - get blocked_requests_ip_reputation_lists1
         function(callback) {
             var end_time = new Date();
             var start_time = new Date();
             var start_time = new Date(start_time.setHours(start_time.getHours() - 12));
             var params = {
                 EndTime: end_time,
-                MetricName: 'SecurityAutomationsIPReputationListsRule1',
+                MetricName: process.env.ACL_METRIC_NAME + 'IPReputationListsRule',
                 Namespace: 'WAF',
                 Period: 12 * 3600,
                 StartTime: start_time,
@@ -396,7 +372,7 @@ function send_anonymous_usage_data(event, context) {
                     Value: "ALL"
                 }, {
                     Name: "WebACL",
-                    Value: "SecurityAutomationsMaliciousRequesters"
+                    Value: process.env.ACL_METRIC_NAME + 'MaliciousRequesters'
                 }]
             };
             cloudwatch.getMetricStatistics(params, function(err, data) {
@@ -413,14 +389,14 @@ function send_anonymous_usage_data(event, context) {
                 }
             });
         },
-        // 5 - get blocked_requests_ip_reputation_lists2
+        // 4 - get blocked_requests_ip_reputation_lists2
         function(callback) {
             var end_time = new Date();
             var start_time = new Date();
             var start_time = new Date(start_time.setHours(start_time.getHours() - 12));
             var params = {
                 EndTime: end_time,
-                MetricName: 'SecurityAutomationsIPReputationListsRule2',
+                MetricName: process.env.ACL_METRIC_NAME + 'IPReputationListsRule2',
                 Namespace: 'WAF',
                 Period: 12 * 3600,
                 StartTime: start_time,
@@ -430,7 +406,7 @@ function send_anonymous_usage_data(event, context) {
                     Value: "ALL"
                 }, {
                     Name: "WebACL",
-                    Value: "SecurityAutomationsMaliciousRequesters"
+                    Value: process.env.ACL_METRIC_NAME + 'MaliciousRequesters'
                 }]
             };
             cloudwatch.getMetricStatistics(params, function(err, data) {
@@ -451,18 +427,24 @@ function send_anonymous_usage_data(event, context) {
         if (err) {
             console.error('Error getting anonymous usage data', err);
         } else {
-            if (result[0] !== "") {
+            var uuid = "";
+            if (process.env.SEND_ANONYMOUS_USAGE_DATA == "yes") {
+                uuid = process.env.UUID;
+            }
+
+            if (uuid !== "") {
                 var usage_data = JSON.stringify({
                     "Solution": "SO0006",
-                    "UUID": result[0],
+                    "UUID": uuid,
                     "TimeStamp": new Date(),
                     "Data": {
                         "Version": "2",
                         "data_type": "reputation_list",
-                        "ip_reputation_lists_size": result[1],
-                        "allowed_requests": result[2],
-                        "blocked_requests_all": result[3],
-                        "blocked_requests_ip_reputation_lists": (result[4] + result[5])
+                        "ip_reputation_lists_size": result[0],
+                        "allowed_requests": result[1],
+                        "blocked_requests_all": result[2],
+                        "blocked_requests_ip_reputation_lists": (result[3] + result[4]),
+                        "waf_type": event.apiType
                     }
                 });
 
@@ -514,6 +496,11 @@ exports.handler = function (event, context) {
     if (!event || !event.lists || (event.lists.length === 0) || !event.ipSetIds || (event.ipSetIds.length === 0)) {
         done(context, null, 'Nothing to do');
     } else {
+        if (event.apiType == "waf-regional") {
+            waf = new aws.WAFRegional({region: event.region});
+        } else {
+            waf = new aws.WAF();
+        }
         var lists = event.lists.map(function(list) {
            return new List(list.url, list.prefix);
         });
@@ -588,10 +575,6 @@ exports.handler = function (event, context) {
                     var updatesLength = updates.length;
                     if (updatesLength > 0) {
                         console.log('IP Set ' + ipSetName + ' requires ' + updatesLength + ' updates');
-                        //console.log('IP Set ' + ipSetName + ' updates: ' + updates.map(function (o) {
-                        //    return o.Action + ' ' + o.IPSetDescriptor.Value;
-                        //}).join(', '));
-                        // limit the number of updates in a single call
                         var batches = [];
                         while (updates.length) {
                             batches.push(updates.splice(0, maxDescriptorsPerIpSetUpdate));

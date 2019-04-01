@@ -14,12 +14,12 @@
 #   limitations under the License.
 ###############################################################################
 
-resource "aws_waf_rule" "WAFXssRule" {
-    depends_on = ["aws_waf_xss_match_set.WAFXssDetection"]
+resource "aws_wafregional_rule" "WAFXssRule" {
+    depends_on = ["aws_wafregional_xss_match_set.WAFXssDetection"]
     name = "${var.customer} - XSS Rule"
-    metric_name = "SecurityAutomationsXssRule"
-    predicates {
-        data_id = "${aws_waf_xss_match_set.WAFXssDetection.id}"
+    metric_name = "${var.customer}SAXssRule"
+    predicate {
+        data_id = "${aws_wafregional_xss_match_set.WAFXssDetection.id}"
         negated = false
         type = "XssMatch"
     }

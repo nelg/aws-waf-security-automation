@@ -14,12 +14,12 @@
 #   limitations under the License.
 ###############################################################################
 
-resource "aws_waf_rule" "WAFSqlInjectionRule" {
-    depends_on = ["aws_waf_sql_injection_match_set.WAFSqlInjectionDetection"]
+resource "aws_wafregional_rule" "WAFSqlInjectionRule" {
+    depends_on = ["aws_wafregional_sql_injection_match_set.WAFSqlInjectionDetection"]
     name = "${var.customer} - SQL Injection Rule"
-    metric_name = "SecurityAutomationsSqlInjectionRule"
-    predicates {
-        data_id = "${aws_waf_sql_injection_match_set.WAFSqlInjectionDetection.id}"
+    metric_name = "${var.customer}SASqlInjectionRule"
+    predicate {
+        data_id = "${aws_wafregional_sql_injection_match_set.WAFSqlInjectionDetection.id}"
         negated = false
         type = "SqlInjectionMatch"
       }

@@ -14,13 +14,13 @@
 #   limitations under the License.
 ###############################################################################
 
-resource "aws_waf_ipset" "WAFReputationListsSet2" {
+resource "aws_wafregional_ipset" "WAFReputationListsSet2" {
     name = "${var.customer} - IP Reputation Lists Set #2"
-    ip_set_descriptors {
+    ip_set_descriptor {
         type = "IPV4"
         value = "0.0.0.0/32"
     }    
     lifecycle {
-        ignore_changes = ["ip_set_descriptors"]
+        ignore_changes = ["ip_set_descriptor"]
     }
 }

@@ -14,9 +14,12 @@
 #   limitations under the License.
 ###############################################################################
 
-resource "aws_waf_ipset" "WAFAutoBlockSet" {
+resource "aws_wafregional_ipset" "WAFAutoBlockSet" {
     name = "${var.customer} - Auto Block Set"
-    ip_set_descriptors {
+    lifecycle {
+        ignore_changes = [ "ip_set_descriptor"]
+    }
+    ip_set_descriptor {
         type = "IPV4"
         value = "0.0.0.0/32"
     }

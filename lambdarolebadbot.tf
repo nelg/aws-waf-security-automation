@@ -32,6 +32,7 @@ resource "aws_iam_role" "LambdaRoleBadBot" {
 }
 EOF
     path = "/"
+    tags = "${var.tags}"
 }
 resource "aws_iam_role_policy" "LambdaRoleBadBotWAFGetChangeToken" {
     name = "${var.customer}-LambdaRoleBadBotWAFGetChangeToken"
@@ -41,7 +42,7 @@ resource "aws_iam_role_policy" "LambdaRoleBadBotWAFGetChangeToken" {
   "Statement": [
     {
       "Action": [
-        "waf:GetChangeToken"
+        "waf-regional:GetChangeToken"
       ],
       "Effect": "Allow",
       "Resource": [
@@ -60,12 +61,12 @@ resource "aws_iam_role_policy" "LambdaRoleBadBotWAFGetAndUpdateIPSet" {
   "Statement": [
     {
       "Action": [
-        "waf:GetIPSet",
-        "waf:UpdateIPSet"
+        "waf-regional:GetIPSet",
+        "waf-regional:UpdateIPSet"
       ],
       "Effect": "Allow",
       "Resource": [
-        "arn:aws:waf::${data.aws_caller_identity.current.account_id}:ipset/${aws_waf_ipset.WAFBadBotSet.id}"
+        "arn:aws:waf-regional:${var.aws_region}:${data.aws_caller_identity.current.account_id}:ipset/${aws_wafregional_ipset.WAFBadBotSet.id}"
       ]
     }
   ]
@@ -87,7 +88,7 @@ resource "aws_iam_role_policy" "LambdaRoleBadBotLogsAccess" {
       ],
       "Effect": "Allow",
       "Resource": [
-        "arn:aws:logs:*:*:*"
+        "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/*"
       ]
     }
   ]

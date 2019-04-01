@@ -14,67 +14,84 @@
 #   limitations under the License.
 ###############################################################################
 
-resource "aws_waf_web_acl" "WAFWebACL" {
-    depends_on = ["aws_waf_rule.WAFWhitelistRule", "aws_waf_rule.WAFBlacklistRule", "aws_waf_rule.WAFAutoBlockRule", "aws_waf_rule.WAFIPReputationListsRule1", "aws_waf_rule.WAFIPReputationListsRule2", "aws_waf_rule.WAFBadBotRule", "aws_waf_rule.WAFSqlInjectionRule", "aws_waf_rule.WAFXssRule"]
+resource "aws_wafregional_web_acl" "WAFWebACL" {
+    depends_on = ["aws_wafregional_rule.WAFWhitelistRule", "aws_wafregional_rule.WAFBlacklistRule", "aws_wafregional_rule.WAFAutoBlockRule", "aws_wafregional_rule.WAFIPReputationListsRule1", "aws_wafregional_rule.WAFIPReputationListsRule2", "aws_wafregional_rule.WAFBadBotRule", "aws_wafregional_rule.WAFSqlInjectionRule", "aws_wafregional_rule.WAFXssRule","aws_wafregional_rate_based_rule.httpflood"]
     name = "${var.customer}"
-    metric_name = "SecurityAutomationsMaliciousRequesters"
+    metric_name = "${var.customer}SAMaliciousRequesters"
     default_action {
         type = "ALLOW"
     }
-    rules {
+    rule {
         action {
             type = "ALLOW"
         }
         priority = 10
-        rule_id = "${aws_waf_rule.WAFWhitelistRule.id}"
+        rule_id = "${aws_wafregional_rule.WAFWhitelistRule.id}"
     }
-    rules {
+    rule {
         action {
             type = "BLOCK"
         }
         priority = 20
-        rule_id = "${aws_waf_rule.WAFBlacklistRule.id}"
+        rule_id = "${aws_wafregional_rule.WAFBlacklistRule.id}"
     }
-    rules {
+    rule {
         action {
             type = "BLOCK"
         }
         priority = 30
-        rule_id = "${aws_waf_rule.WAFAutoBlockRule.id}"
+        rule_id = "${aws_wafregional_rule.WAFAutoBlockRule.id}"
     }
-    rules {
+    rule {
         action {
             type = "BLOCK"
         }
         priority = 40
-        rule_id = "${aws_waf_rule.WAFIPReputationListsRule1.id}"
+        rule_id = "${aws_wafregional_rule.WAFIPReputationListsRule1.id}"
     }
-    rules {
+    rule {
         action {
             type = "BLOCK"
         }
         priority = 50
-        rule_id = "${aws_waf_rule.WAFIPReputationListsRule2.id}"
+        rule_id = "${aws_wafregional_rule.WAFIPReputationListsRule2.id}"
     }
-    rules {
+    rule {
         action {
             type = "BLOCK"
         }
         priority = 60
-        rule_id = "${aws_waf_rule.WAFBadBotRule.id}"
+        rule_id = "${aws_wafregional_rule.WAFBadBotRule.id}"
     }
-    rules {
+    rule {
         action {
             type = "BLOCK"
         }
         priority = 70
-        rule_id = "${aws_waf_rule.WAFSqlInjectionRule.id}"
+        rule_id = "${aws_wafregional_rule.WAFSqlInjectionRule.id}"
     }
-    rules {
+    rule {
         action {
             type = "BLOCK"
         }
         priority = 80
-        rule_id = "${aws_waf_rule.WAFXssRule.id}"
+        rule_id = "${aws_wafregional_rule.WAFXssRule.id}"
+    }
+    rule {
+        action {
+            type = "BLOCK"
+        }
+        type = "RATE_BASED"
+        priority = 90
+        rule_id = "${aws_wafregional_rate_based_rule.httpflood.id}"
+    }
+    # Fortinet Managed Rules for AWS WAF - Complete OWASP Top 10
+    rule {
+        override_action {
+           type = "COUNT"
+        }
+        type = "GROUP"
+        priority = 91
+        rule_id = "27fde56a-b33f-4ef3-b8ff-143b00163369"
     }
 }

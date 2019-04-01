@@ -14,12 +14,12 @@
 #   limitations under the License.
 ###############################################################################
 
-resource "aws_waf_rule" "WAFAutoBlockRule" {
-    depends_on = ["aws_waf_ipset.WAFAutoBlockSet"]
+resource "aws_wafregional_rule" "WAFAutoBlockRule" {
+    depends_on = ["aws_wafregional_ipset.WAFAutoBlockSet"]
     name = "${var.customer} - Auto Block Rule"
-    metric_name = "SecurityAutomationsAutoBlockRule"
-    predicates {
-        data_id = "${aws_waf_ipset.WAFAutoBlockSet.id}"
+    metric_name = "${var.customer}SAAutoBlockRule"
+    predicate {
+        data_id = "${aws_wafregional_ipset.WAFAutoBlockSet.id}"
         negated = false
         type = "IPMatch"
     }

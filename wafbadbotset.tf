@@ -14,9 +14,12 @@
 #   limitations under the License.
 ###############################################################################
 
-resource "aws_waf_ipset" "WAFBadBotSet" {
+resource "aws_wafregional_ipset" "WAFBadBotSet" {
     name = "${var.customer} - IP Bad Bot Set"
-    ip_set_descriptors {
+    lifecycle {
+        ignore_changes = [ "ip_set_descriptor"]
+    }
+    ip_set_descriptor {
         type = "IPV4"
         value = "0.0.0.0/32"
     }
