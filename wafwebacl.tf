@@ -85,13 +85,13 @@ resource "aws_wafregional_web_acl" "WAFWebACL" {
         priority = 90
         rule_id = "${aws_wafregional_rate_based_rule.httpflood.id}"
     }
-    # Fortinet Managed Rules for AWS WAF - Complete OWASP Top 10
-    rule {
-        override_action {
-           type = "COUNT"
-        }
-        type = "GROUP"
-        priority = 91
-        rule_id = "27fde56a-b33f-4ef3-b8ff-143b00163369"
-    }
+    # Example: Fortinet Managed Rules for AWS WAF - Complete OWASP Top 10
+    # rule {
+    #     override_action {
+    #        type = "COUNT"
+    #     }
+    #     type = "GROUP"
+    #     priority = 91
+    #     rule_id = "27fde56a-b33f-4ef3-b8ff-143b00163369"
+    # }
 }
