@@ -17,7 +17,7 @@
 resource "aws_wafregional_rule" "WAFAutoBlockRule" {
     depends_on = ["aws_wafregional_ipset.WAFAutoBlockSet"]
     name = "${var.customer} - Auto Block Rule"
-    metric_name = "${var.customer}SAAutoBlockRule"
+    metric_name = "${var.customermetric}SAAutoBlockRule"
     predicate {
         data_id = "${aws_wafregional_ipset.WAFAutoBlockSet.id}"
         negated = false

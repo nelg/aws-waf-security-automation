@@ -50,7 +50,7 @@ resource "aws_lambda_function" "LambdaWAFLogParserFunction" {
             MAX_AGE_TO_UPDATE = "30"
             REGION = "${var.aws_region}"
             LOG_TYPE = "alb"
-            METRIC_NAME_PREFIX = "${var.customer}"
+            METRIC_NAME_PREFIX = "${var.customermetric}"
             LOG_LEVEL = "${var.log_level}"
             STACK_NAME = "${var.customer}-LogParser-data"
         }

@@ -74,6 +74,7 @@ resource "aws_api_gateway_deployment" "ApiGatewayBadBotStage" {
     depends_on = [
       "aws_api_gateway_integration.ApiGatewayBadBotIntegrationRoot",
       "aws_api_gateway_integration.ApiGatewayBadBotIntegration",
+      "aws_api_gateway_deployment.ApiGatewayBadBotDeployment",
     ]
     #depends_on = ["aws_api_gateway_deployment.ApiGatewayBadBotDeployment"]
     rest_api_id = "${aws_api_gateway_rest_api.ApiGatewayBadBot.id}"

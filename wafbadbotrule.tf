@@ -17,7 +17,7 @@
 resource "aws_wafregional_rule" "WAFBadBotRule" {
     depends_on = ["aws_wafregional_ipset.WAFBadBotSet"]
     name = "${var.customer} - Bad Bot Rule"
-    metric_name = "${var.customer}SABadBotRule"
+   metric_name = "${var.customermetric}SABadBotRule"
     predicate {
         data_id = "${aws_wafregional_ipset.WAFBadBotSet.id}"
         negated = false

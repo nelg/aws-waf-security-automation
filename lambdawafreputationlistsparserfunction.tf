@@ -31,7 +31,7 @@ resource "aws_lambda_function" "LambdaWAFReputationListsParserFunction" {
     environment {
         variables = {
             SEND_ANONYMOUS_USAGE_DATA = "${var.SendAnonymousUsageData}"
-            METRIC_NAME_PREFIX = "${var.customer}"
+            METRIC_NAME_PREFIX = "${var.customermetric}"
             LOG_LEVEL = "${var.log_level}"
             UUID = "undef"
         }

@@ -17,7 +17,7 @@
 resource "aws_wafregional_rule" "WAFWhitelistRule" {
     depends_on = ["aws_wafregional_ipset.WAFWhitelistSet"]
     name = "${var.customer} - Whitelist Rule"
-    metric_name = "${var.customer}SAWhitelistRule"
+    metric_name = "${var.customermetric}SAWhitelistRule"
     predicate {
         data_id = "${aws_wafregional_ipset.WAFWhitelistSet.id}"
         negated = false

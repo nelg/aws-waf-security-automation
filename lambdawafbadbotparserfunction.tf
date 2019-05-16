@@ -37,7 +37,7 @@ resource "aws_lambda_function" "LambdaWAFBadBotParserFunction" {
             SEND_ANONYMOUS_USAGE_DATA = "${var.SendAnonymousUsageData}"
             REGION = "${var.aws_region}"
             LOG_TYPE = "alb"
-            METRIC_NAME_PREFIX = "${var.customer}"
+            METRIC_NAME_PREFIX = "${var.customermetric}"
             LOG_LEVEL = "${var.log_level}"
         }
     }

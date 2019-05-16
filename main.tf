@@ -41,11 +41,20 @@ variable "customer" {
     description = "[REQUIRED] Env/Customer/Project Name (max 15 characters):"
 }
 
+variable "customermetric" {
+  description = "[REQUIRED] Customer name, in metric format without -"
+}
 variable "CloudFrontAccessLogBucket" {
     description = "[REQUIRED] CDN S3 Logs Bucket:"
 }
 ###############################################################################
 
+variable "blockmode" {
+  description = "BLOCK or COUNT"
+  default     = "BLOCK"
+}
+
+###############################################################################
 
 ###############################################################################
 # CUSTOM VARIABLES - TUNNING WAF #
