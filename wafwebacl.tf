@@ -18,6 +18,10 @@ resource "aws_wafregional_web_acl" "WAFWebACL" {
     depends_on = ["aws_wafregional_rule.WAFWhitelistRule", "aws_wafregional_rule.WAFBlacklistRule", "aws_wafregional_rule.WAFAutoBlockRule", "aws_wafregional_rule.WAFIPReputationListsRule1", "aws_wafregional_rule.WAFIPReputationListsRule2", "aws_wafregional_rule.WAFBadBotRule", "aws_wafregional_rule.WAFSqlInjectionRule", "aws_wafregional_rule.WAFXssRule","aws_wafregional_rate_based_rule.httpflood"]
     name = "${var.customer}"
     metric_name = "${var.customermetric}SAMaliciousRequesters"
+    # IF Logging - TF0.12 will allow this
+    logging_configuration {
+      log_destination = "${aws_kinesis_firehose_delivery_stream.waf.arn}"
+    }
     default_action {
         type = "ALLOW"
     }
@@ -94,4 +98,6 @@ resource "aws_wafregional_web_acl" "WAFWebACL" {
     #   priority = 91
     #   rule_id  = "27fde56a-b33f-4ef3-b8ff-143b00163369"
     # }
+
+   
 }
