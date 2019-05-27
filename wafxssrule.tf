@@ -15,12 +15,13 @@
 ###############################################################################
 
 resource "aws_wafregional_rule" "WAFXssRule" {
-    depends_on = ["aws_wafregional_xss_match_set.WAFXssDetection"]
-    name = "${var.customer} - XSS Rule"
-    metric_name = "${var.customermetric}SAXssRule"
-    predicate {
-        data_id = "${aws_wafregional_xss_match_set.WAFXssDetection.id}"
-        negated = false
-        type = "XssMatch"
-    }
+  depends_on  = [aws_wafregional_xss_match_set.WAFXssDetection]
+  name        = "${var.customer} - XSS Rule"
+  metric_name = "${var.customermetric}SAXssRule"
+  predicate {
+    data_id = aws_wafregional_xss_match_set.WAFXssDetection.id
+    negated = false
+    type    = "XssMatch"
+  }
 }
+

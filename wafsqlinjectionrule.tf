@@ -15,12 +15,13 @@
 ###############################################################################
 
 resource "aws_wafregional_rule" "WAFSqlInjectionRule" {
-    depends_on = ["aws_wafregional_sql_injection_match_set.WAFSqlInjectionDetection"]
-    name = "${var.customer} - SQL Injection Rule"
-    metric_name = "${var.customermetric}SASqlInjectionRule"
-    predicate {
-        data_id = "${aws_wafregional_sql_injection_match_set.WAFSqlInjectionDetection.id}"
-        negated = false
-        type = "SqlInjectionMatch"
-      }
+  depends_on  = [aws_wafregional_sql_injection_match_set.WAFSqlInjectionDetection]
+  name        = "${var.customer} - SQL Injection Rule"
+  metric_name = "${var.customermetric}SASqlInjectionRule"
+  predicate {
+    data_id = aws_wafregional_sql_injection_match_set.WAFSqlInjectionDetection.id
+    negated = false
+    type    = "SqlInjectionMatch"
+  }
 }
+

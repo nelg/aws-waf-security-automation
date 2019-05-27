@@ -15,12 +15,13 @@
 ###############################################################################
 
 resource "aws_wafregional_ipset" "WAFAutoBlockSet" {
-    name = "${var.customer} - Auto Block Set"
-    lifecycle {
-        ignore_changes = [ "ip_set_descriptor"]
-    }
-    ip_set_descriptor {
-        type = "IPV4"
-        value = "0.0.0.0/32"
-    }
+  name = "${var.customer} - Auto Block Set"
+  lifecycle {
+    ignore_changes = [ip_set_descriptor]
+  }
+  ip_set_descriptor {
+    type  = "IPV4"
+    value = "0.0.0.0/32"
+  }
 }
+

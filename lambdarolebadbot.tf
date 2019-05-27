@@ -15,8 +15,8 @@
 ###############################################################################
 
 resource "aws_iam_role" "LambdaRoleBadBot" {
-    name = "${var.customer}-LambdaRoleBadBot"
-    assume_role_policy = <<EOF
+  name               = "${var.customer}-LambdaRoleBadBot"
+  assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -31,13 +31,16 @@ resource "aws_iam_role" "LambdaRoleBadBot" {
   ]
 }
 EOF
-    path = "/"
-    tags = "${var.tags}"
+
+
+  path = "/"
+  tags = var.tags
 }
+
 resource "aws_iam_role_policy" "LambdaRoleBadBotWAFGetChangeToken" {
-    name = "${var.customer}-LambdaRoleBadBotWAFGetChangeToken"
-    role = "${aws_iam_role.LambdaRoleBadBot.id}"
-    policy = <<EOF
+  name = "${var.customer}-LambdaRoleBadBotWAFGetChangeToken"
+  role = aws_iam_role.LambdaRoleBadBot.id
+  policy = <<EOF
 {
   "Statement": [
     {
@@ -52,11 +55,13 @@ resource "aws_iam_role_policy" "LambdaRoleBadBotWAFGetChangeToken" {
   ]
 }
 EOF
+
 }
+
 resource "aws_iam_role_policy" "LambdaRoleBadBotWAFGetAndUpdateIPSet" {
-    name = "${var.customer}-LambdaRoleBadBotWAFGetAndUpdateIPSet"
-    role = "${aws_iam_role.LambdaRoleBadBot.id}"
-    policy = <<EOF
+name   = "${var.customer}-LambdaRoleBadBotWAFGetAndUpdateIPSet"
+role   = aws_iam_role.LambdaRoleBadBot.id
+policy = <<EOF
 {
   "Statement": [
     {
@@ -72,11 +77,13 @@ resource "aws_iam_role_policy" "LambdaRoleBadBotWAFGetAndUpdateIPSet" {
   ]
 }
 EOF
+
 }
+
 resource "aws_iam_role_policy" "LambdaRoleBadBotLogsAccess" {
-    name = "${var.customer}-LambdaRoleBadBotLogsAccess"
-    role = "${aws_iam_role.LambdaRoleBadBot.id}"
-    policy = <<EOF
+name = "${var.customer}-LambdaRoleBadBotLogsAccess"
+role = aws_iam_role.LambdaRoleBadBot.id
+policy = <<EOF
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -94,11 +101,13 @@ resource "aws_iam_role_policy" "LambdaRoleBadBotLogsAccess" {
   ]
 }
 EOF
+
 }
+
 resource "aws_iam_role_policy" "LambdaRoleBadBotCloudWatchAccess" {
-    name = "${var.customer}-LambdaRoleBadBotCloudWatchAccess"
-    role = "${aws_iam_role.LambdaRoleBadBot.id}"
-    policy = <<EOF
+  name   = "${var.customer}-LambdaRoleBadBotCloudWatchAccess"
+  role   = aws_iam_role.LambdaRoleBadBot.id
+  policy = <<EOF
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -112,4 +121,6 @@ resource "aws_iam_role_policy" "LambdaRoleBadBotCloudWatchAccess" {
   ]
 }
 EOF
+
 }
+

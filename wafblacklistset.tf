@@ -15,9 +15,10 @@
 ###############################################################################
 
 resource "aws_wafregional_ipset" "WAFBlacklistSet" {
-    name = "${var.customer} - Blacklist Set"
-    ip_set_descriptor {
-        type = "IPV4"
-        value = "0.0.0.0/32"
-    }
+  name = "${var.customer} - Blacklist Set"
+  ip_set_descriptor {
+    type  = "IPV4"
+    value = "0.0.0.0/32"
+  }
 }
+

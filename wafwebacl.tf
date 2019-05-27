@@ -15,89 +15,102 @@
 ###############################################################################
 
 resource "aws_wafregional_web_acl" "WAFWebACL" {
-    depends_on = ["aws_wafregional_rule.WAFWhitelistRule", "aws_wafregional_rule.WAFBlacklistRule", "aws_wafregional_rule.WAFAutoBlockRule", "aws_wafregional_rule.WAFIPReputationListsRule1", "aws_wafregional_rule.WAFIPReputationListsRule2", "aws_wafregional_rule.WAFBadBotRule", "aws_wafregional_rule.WAFSqlInjectionRule", "aws_wafregional_rule.WAFXssRule","aws_wafregional_rate_based_rule.httpflood"]
-    name = "${var.customer}"
-    metric_name = "${var.customermetric}SAMaliciousRequesters"
-    # IF Logging - TF0.12 will allow this
-    logging_configuration {
-      log_destination = "${aws_kinesis_firehose_delivery_stream.waf.arn}"
-    }
-    default_action {
-        type = "ALLOW"
-    }
-    rule {
-        action {
-            type = "ALLOW"
-        }
-        priority = 10
-        rule_id = "${aws_wafregional_rule.WAFWhitelistRule.id}"
-    }
-    rule {
-        action {
-            type = "${var.blockmode}"
-        }
-        priority = 20
-        rule_id = "${aws_wafregional_rule.WAFBlacklistRule.id}"
-    }
-    rule {
-        action {
-            type = "${var.blockmode}"
-        }
-        priority = 30
-        rule_id = "${aws_wafregional_rule.WAFAutoBlockRule.id}"
-    }
-    rule {
-        action {
-            type = "${var.blockmode}"
-        }
-        priority = 40
-        rule_id = "${aws_wafregional_rule.WAFIPReputationListsRule1.id}"
-    }
-    rule {
-        action {
-            type = "${var.blockmode}"
-        }
-        priority = 50
-        rule_id = "${aws_wafregional_rule.WAFIPReputationListsRule2.id}"
-    }
-    rule {
-        action {
-            type = "${var.blockmode}"
-        }
-        priority = 60
-        rule_id = "${aws_wafregional_rule.WAFBadBotRule.id}"
-    }
-    rule {
-        action {
-            type = "${var.blockmode}"
-        }
-        priority = 70
-        rule_id = "${aws_wafregional_rule.WAFSqlInjectionRule.id}"
-    }
-    rule {
-        action {
-            type = "${var.blockmode}"
-        }
-        priority = 80
-        rule_id = "${aws_wafregional_rule.WAFXssRule.id}"
-    }
-    rule {
-        action {
-            type = "${var.blockmode}"
-        }
-        type = "RATE_BASED"
-        priority = 90
-        rule_id = "${aws_wafregional_rate_based_rule.httpflood.id}"
-    }
-    # Example: Fortinet Managed Rules for AWS WAF - Complete OWASP Top 10
-    # rule {
-    #   override_action {
-    #     type = "${var.blockmode}"
-    #   }
-    #   type     = "GROUP"
-    #   priority = 91
-    #   rule_id  = "27fde56a-b33f-4ef3-b8ff-143b00163369"
-    # }
+  depends_on = [
+    aws_wafregional_rule.WAFWhitelistRule,
+    aws_wafregional_rule.WAFBlacklistRule,
+    aws_wafregional_rule.WAFAutoBlockRule,
+    aws_wafregional_rule.WAFIPReputationListsRule1,
+    aws_wafregional_rule.WAFIPReputationListsRule2,
+    aws_wafregional_rule.WAFBadBotRule,
+    aws_wafregional_rule.WAFSqlInjectionRule,
+    aws_wafregional_rule.WAFXssRule,
+    aws_wafregional_rate_based_rule.httpflood,
+  ]
+  name        = var.customer
+  metric_name = "${var.customermetric}SAMaliciousRequesters"
 
-   
+  # IF Logging - TF0.12 will allow this
+  dynamic "logging_configuration" {
+    for_each = var.waf_firehose ? ["1"] : []
+    content {
+      log_destination = aws_kinesis_firehose_delivery_stream.waf.arn
+    }
+  }
+  default_action {
+    type = "ALLOW"
+  }
+  rule {
+    action {
+      type = "ALLOW"
+    }
+    priority = 10
+    rule_id  = aws_wafregional_rule.WAFWhitelistRule.id
+  }
+  rule {
+    action {
+      type = var.blockmode
+    }
+    priority = 20
+    rule_id  = aws_wafregional_rule.WAFBlacklistRule.id
+  }
+  rule {
+    action {
+      type = var.blockmode
+    }
+    priority = 30
+    rule_id  = aws_wafregional_rule.WAFAutoBlockRule.id
+  }
+  rule {
+    action {
+      type = var.blockmode
+    }
+    priority = 40
+    rule_id  = aws_wafregional_rule.WAFIPReputationListsRule1.id
+  }
+  rule {
+    action {
+      type = var.blockmode
+    }
+    priority = 50
+    rule_id  = aws_wafregional_rule.WAFIPReputationListsRule2.id
+  }
+  rule {
+    action {
+      type = var.blockmode
+    }
+    priority = 60
+    rule_id  = aws_wafregional_rule.WAFBadBotRule.id
+  }
+  rule {
+    action {
+      type = var.blockmode
+    }
+    priority = 70
+    rule_id  = aws_wafregional_rule.WAFSqlInjectionRule.id
+  }
+  rule {
+    action {
+      type = var.blockmode
+    }
+    priority = 80
+    rule_id  = aws_wafregional_rule.WAFXssRule.id
+  }
+  rule {
+    action {
+      type = var.blockmode
+    }
+    type     = "RATE_BASED"
+    priority = 90
+    rule_id  = aws_wafregional_rate_based_rule.httpflood.id
+  }
+  # Example: Fortinet Managed Rules for AWS WAF - Complete OWASP Top 10
+  # rule {
+  #   override_action {
+  #     type = "${var.blockmode}"
+  #   }
+  #   type     = "GROUP"
+  #   priority = 91
+  #   rule_id  = "27fde56a-b33f-4ef3-b8ff-143b00163369"
+  # }
 }
+

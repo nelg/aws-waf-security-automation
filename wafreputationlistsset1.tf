@@ -15,12 +15,13 @@
 ###############################################################################
 
 resource "aws_wafregional_ipset" "WAFReputationListsSet1" {
-    name = "${var.customer} - IP Reputation Lists Set #1"
-    ip_set_descriptor {
-        type = "IPV4"
-        value = "0.0.0.0/32"
-    }    
-    lifecycle {
-        ignore_changes = ["ip_set_descriptor"]
-    }
+  name = "${var.customer} - IP Reputation Lists Set #1"
+  ip_set_descriptor {
+    type  = "IPV4"
+    value = "0.0.0.0/32"
+  }
+  lifecycle {
+    ignore_changes = [ip_set_descriptor]
+  }
 }
+

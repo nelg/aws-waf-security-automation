@@ -15,12 +15,13 @@
 ###############################################################################
 
 resource "aws_wafregional_rule" "WAFIPReputationListsRule1" {
-    depends_on = ["aws_wafregional_ipset.WAFReputationListsSet1"]
-    name = "${var.customer} - WAF IP Reputation Lists Rule #1"
-    metric_name = "${var.customermetric}SAIPReputationListsRule1"
-    predicate {
-        data_id = "${aws_wafregional_ipset.WAFReputationListsSet1.id}"
-        negated = false
-        type = "IPMatch"
-    }
+  depends_on  = [aws_wafregional_ipset.WAFReputationListsSet1]
+  name        = "${var.customer} - WAF IP Reputation Lists Rule #1"
+  metric_name = "${var.customermetric}SAIPReputationListsRule1"
+  predicate {
+    data_id = aws_wafregional_ipset.WAFReputationListsSet1.id
+    negated = false
+    type    = "IPMatch"
+  }
 }
+

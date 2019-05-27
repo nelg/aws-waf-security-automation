@@ -15,8 +15,8 @@
 ###############################################################################
 
 resource "aws_iam_role" "LambdaRoleReputationListsParser" {
-    name = "${var.customer}-LambdaRoleReputationListsParser"
-    assume_role_policy = <<EOF
+  name               = "${var.customer}-LambdaRoleReputationListsParser"
+  assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -31,13 +31,16 @@ resource "aws_iam_role" "LambdaRoleReputationListsParser" {
   ]
 }
 EOF
-    path = "/"
-    tags = "${var.tags}"
+
+
+  path = "/"
+  tags = var.tags
 }
+
 resource "aws_iam_role_policy" "LambdaRoleReputationListsParserCloudWatchLogs" {
-    name = "${var.customer}-LambdaRoleReputationListsParserCloudWatchLogs"
-    role = "${aws_iam_role.LambdaRoleReputationListsParser.id}"
-    policy = <<EOF
+  name = "${var.customer}-LambdaRoleReputationListsParserCloudWatchLogs"
+  role = aws_iam_role.LambdaRoleReputationListsParser.id
+  policy = <<EOF
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -55,11 +58,13 @@ resource "aws_iam_role_policy" "LambdaRoleReputationListsParserCloudWatchLogs" {
   ]
 }
 EOF
+
 }
+
 resource "aws_iam_role_policy" "LambdaRoleReputationListsParserWAFGetChangeToken" {
-    name = "${var.customer}-LambdaRoleReputationListsParserWAFGetChangeToken"
-    role = "${aws_iam_role.LambdaRoleReputationListsParser.id}"
-    policy = <<EOF
+name   = "${var.customer}-LambdaRoleReputationListsParserWAFGetChangeToken"
+role   = aws_iam_role.LambdaRoleReputationListsParser.id
+policy = <<EOF
 {
   "Statement": [
     {
@@ -75,11 +80,13 @@ resource "aws_iam_role_policy" "LambdaRoleReputationListsParserWAFGetChangeToken
   ]
 }
 EOF
+
 }
+
 resource "aws_iam_role_policy" "LambdaRoleReputationListsParserWAFGetAndUpdateIPSet" {
-    name = "${var.customer}-LambdaRoleReputationListsParserWAFGetAndUpdateIPSet"
-    role = "${aws_iam_role.LambdaRoleReputationListsParser.id}"
-    policy = <<EOF
+name = "${var.customer}-LambdaRoleReputationListsParserWAFGetAndUpdateIPSet"
+role = aws_iam_role.LambdaRoleReputationListsParser.id
+policy = <<EOF
 {
   "Statement": [
     {
@@ -96,11 +103,13 @@ resource "aws_iam_role_policy" "LambdaRoleReputationListsParserWAFGetAndUpdateIP
   ]
 }
 EOF
+
 }
+
 resource "aws_iam_role_policy" "LambdaRoleReputationListsParserCloudWatchAccess" {
-    name = "${var.customer}-LambdaRoleReputationListsParserCloudWatchAccess"
-    role = "${aws_iam_role.LambdaRoleReputationListsParser.id}"
-    policy = <<EOF
+  name   = "${var.customer}-LambdaRoleReputationListsParserCloudWatchAccess"
+  role   = aws_iam_role.LambdaRoleReputationListsParser.id
+  policy = <<EOF
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -114,4 +123,6 @@ resource "aws_iam_role_policy" "LambdaRoleReputationListsParserCloudWatchAccess"
   ]
 }
 EOF
+
 }
+

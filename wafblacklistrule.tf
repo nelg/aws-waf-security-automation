@@ -15,12 +15,13 @@
 ###############################################################################
 
 resource "aws_wafregional_rule" "WAFBlacklistRule" {
-    depends_on = ["aws_wafregional_ipset.WAFBlacklistSet"]
-    name = "${var.customer} - Blacklist Rule"
-    metric_name = "${var.customermetric}SABlacklistRule"
-    predicate {
-        data_id = "${aws_wafregional_ipset.WAFBlacklistSet.id}"
-        negated = false
-        type = "IPMatch"
-    }
+  depends_on  = [aws_wafregional_ipset.WAFBlacklistSet]
+  name        = "${var.customer} - Blacklist Rule"
+  metric_name = "${var.customermetric}SABlacklistRule"
+  predicate {
+    data_id = aws_wafregional_ipset.WAFBlacklistSet.id
+    negated = false
+    type    = "IPMatch"
+  }
 }
+

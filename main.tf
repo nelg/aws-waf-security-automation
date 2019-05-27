@@ -28,25 +28,27 @@ variable "elb_association" {
 }
 
 variable "elb_s3_prefix" {
-    description = "Prefix in s3 bucket that ELB logs to.  This may be the Env or Customer"
-    default = ""
+  description = "Prefix in s3 bucket that ELB logs to.  This may be the Env or Customer"
+  default     = ""
 }
 
 resource "aws_wafregional_web_acl_association" "alb_association" {
-  resource_arn = "${var.elb_association}"
-  web_acl_id   = "${aws_wafregional_web_acl.WAFWebACL.id}"
+  resource_arn = var.elb_association
+  web_acl_id   = aws_wafregional_web_acl.WAFWebACL.id
 }
 
 variable "customer" {
-    description = "[REQUIRED] Env/Customer/Project Name (max 15 characters):"
+  description = "[REQUIRED] Env/Customer/Project Name (max 15 characters):"
 }
 
 variable "customermetric" {
   description = "[REQUIRED] Customer name, in metric format without -"
 }
+
 variable "CloudFrontAccessLogBucket" {
-    description = "[REQUIRED] CDN S3 Logs Bucket:"
+  description = "[REQUIRED] CDN S3 Logs Bucket:"
 }
+
 ###############################################################################
 
 variable "blockmode" {
@@ -62,23 +64,28 @@ variable "blockmode" {
 ##################################
 #default = "50"
 variable "ErrorThreshold" {
-    default = "500"
-}
-#default = "400"
-variable "RequestThreshold" {
-    default = "800"
-}
-variable "WAFBlockPeriod" {
-    default = "240"
-}
-variable "log_level" {
-    default = "DEBUG"
-  
-}
-variable "flood_rate" {
-    default = "2000"
+  default = "500"
 }
 
+#default = "400"
+variable "RequestThreshold" {
+  default = "800"
+}
+
+variable "WAFBlockPeriod" {
+  default = "240"
+}
+
+variable "log_level" {
+  default = "DEBUG"
+}
+
+variable "flood_rate" {
+  default = "2000"
+}
+variable "waf_firehose" {
+  default = true
+}
 
 
 ###############################################################################
@@ -86,19 +93,20 @@ variable "flood_rate" {
 ###################
 # Helps Amazon tune WAF functionality - highly recommended
 variable "SendAnonymousUsageData" {
-    default = "no"
+  default = "no"
 }
 
 # used for API gateway
 variable "aws_region" {
-    default     = "ap-southeast-2"
+  default = "ap-southeast-2"
 }
-
 
 ###############################################################################
 # GET AWS ACCOUNT #
 ###################
-data "aws_caller_identity" "current" { }
+data "aws_caller_identity" "current" {
+}
+
 # output "account_id" {
 #     value = "${data.aws_caller_identity.current.account_id}"
 # }

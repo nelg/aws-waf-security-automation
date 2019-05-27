@@ -15,8 +15,8 @@
 ###############################################################################
 
 resource "aws_iam_role" "LambdaRoleLogParser" {
-    name = "${var.customer}-LambdaRoleLogParser"
-    assume_role_policy = <<EOF
+  name               = "${var.customer}-LambdaRoleLogParser"
+  assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -31,13 +31,16 @@ resource "aws_iam_role" "LambdaRoleLogParser" {
   ]
 }
 EOF
-    path = "/"
-    tags = "${var.tags}"
+
+
+  path = "/"
+  tags = var.tags
 }
+
 resource "aws_iam_role_policy" "LambdaRoleLogParserS3Access" {
-    name = "${var.customer}-LambdaRoleLogParserS3Access"
-    role = "${aws_iam_role.LambdaRoleLogParser.id}"
-    policy = <<EOF
+  name = "${var.customer}-LambdaRoleLogParserS3Access"
+  role = aws_iam_role.LambdaRoleLogParser.id
+  policy = <<EOF
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -55,11 +58,13 @@ resource "aws_iam_role_policy" "LambdaRoleLogParserS3Access" {
   ]
 }
 EOF
+
 }
+
 resource "aws_iam_role_policy" "LambdaRoleLogParserS3AccessPut" {
-    name = "${var.customer}-LambdaRoleLogParserS3AccessPut"
-    role = "${aws_iam_role.LambdaRoleLogParser.id}"
-    policy = <<EOF
+name   = "${var.customer}-LambdaRoleLogParserS3AccessPut"
+role   = aws_iam_role.LambdaRoleLogParser.id
+policy = <<EOF
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -75,11 +80,13 @@ resource "aws_iam_role_policy" "LambdaRoleLogParserS3AccessPut" {
   ]
 }
 EOF
+
 }
+
 resource "aws_iam_role_policy" "LambdaRoleLogParserWAFGetChangeToken" {
-    name = "${var.customer}-LambdaRoleLogParserWAFGetChangeToken"
-    role = "${aws_iam_role.LambdaRoleLogParser.id}"
-    policy = <<EOF
+name = "${var.customer}-LambdaRoleLogParserWAFGetChangeToken"
+role = aws_iam_role.LambdaRoleLogParser.id
+policy = <<EOF
 {
   "Statement": [
     {
@@ -94,11 +101,13 @@ resource "aws_iam_role_policy" "LambdaRoleLogParserWAFGetChangeToken" {
   ]
 }
 EOF
+
 }
+
 resource "aws_iam_role_policy" "LambdaRoleLogParserWAFGetAndUpdateIPSet" {
-    name = "${var.customer}-LambdaRoleLogParserWAFGetAndUpdateIPSet"
-    role = "${aws_iam_role.LambdaRoleLogParser.id}"
-    policy = <<EOF
+  name   = "${var.customer}-LambdaRoleLogParserWAFGetAndUpdateIPSet"
+  role   = aws_iam_role.LambdaRoleLogParser.id
+  policy = <<EOF
 {
   "Statement": [
     {
@@ -115,11 +124,13 @@ resource "aws_iam_role_policy" "LambdaRoleLogParserWAFGetAndUpdateIPSet" {
   ]
 }
 EOF
+
 }
+
 resource "aws_iam_role_policy" "LambdaRoleLogParserLogsAccess" {
-    name = "${var.customer}-LambdaRoleLogParserLogsAccess"
-    role = "${aws_iam_role.LambdaRoleLogParser.id}"
-    policy = <<EOF
+  name = "${var.customer}-LambdaRoleLogParserLogsAccess"
+  role = aws_iam_role.LambdaRoleLogParser.id
+  policy = <<EOF
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -137,11 +148,13 @@ resource "aws_iam_role_policy" "LambdaRoleLogParserLogsAccess" {
   ]
 }
 EOF
+
 }
+
 resource "aws_iam_role_policy" "LambdaRoleLogParserCloudWatchAccess" {
-    name = "${var.customer}-LambdaRoleLogParserCloudWatchAccess"
-    role = "${aws_iam_role.LambdaRoleLogParser.id}"
-    policy = <<EOF
+name   = "${var.customer}-LambdaRoleLogParserCloudWatchAccess"
+role   = aws_iam_role.LambdaRoleLogParser.id
+policy = <<EOF
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -157,4 +170,6 @@ resource "aws_iam_role_policy" "LambdaRoleLogParserCloudWatchAccess" {
   ]
 }
 EOF
+
 }
+
